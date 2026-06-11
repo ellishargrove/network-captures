@@ -1,0 +1,39 @@
+DNS ANOMALY - 2019-03-15
+Logged during: march-routing-session.pcap (see capture for traffic)
+Site: TRACE HQ / SRF
+
+---
+
+Noticed unusual DNS query volume during the march routing session. Not the main issue I was
+capturing for, but it showed up in the traffic and I want to note it.
+
+WHAT I SAW
+Between 09:18 and 09:24 UTC, 192.168.10.22 (workstation, WS-GUEST-02) was generating DNS queries
+at roughly 4x normal rate. Not a flood - not triggering anything - but elevated for that host.
+Query pattern: mostly A record lookups, mix of internal and external names.
+
+Some of the external names looked like DGA (domain generation algorithm) candidates:
+  - qzxmpl-v2.198.51.100.99 (NXDOMAIN)
+  - pl9kvr.203.0.113.44 (NXDOMAIN)
+  - rtx44bc.198.51.100.72 (NXDOMAIN)
+
+Pattern looked algorithmic. Ran the hostnames through a DGA classifier - LOW confidence.
+Could be a misconfigured application generating random retry hostnames, not necessarily malicious.
+
+WHAT I DID
+Pulled the host off the guest VLAN as a precaution. Scanned it - nothing found. Reimaged it
+anyway (guest machines get reimaged on any anomaly, policy).
+
+The elevated DNS activity stopped after the host was pulled. Everything else in the capture
+is normal routing and TLS handshakes - see the capture if you want the full picture.
+
+ROOT CAUSE
+Never confirmed. DGA classifiers weren't confident. Most likely a browser plugin generating
+beacon traffic to ad infrastructure. Guest machine, low risk. Documented and closed.
+
+This is NOT related to the routing drops we were chasing that day. That's a separate issue
+tracked in the routing notes - never did find root cause on that one.
+
+---
+
+e.hargrove // TRACE // 2019-03-18
