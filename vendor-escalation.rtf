@@ -1,0 +1,46 @@
+{\rtf1\ansi\deff0
+{\fonttbl{\f0 Courier New;}{\f1 Courier New;}}
+\f0\fs20
+
+VENDOR ESCALATION LOG\line
+ISS-2019-031 - WAN Throughput Drops\line
+Opened with ISP: 2019-07-01\line
+e.hargrove // TRACE\line
+\line
+---\line
+\line
+CASE HISTORY\line
+\line
+2019-07-01  Opened ticket with ISP NOC. Described symptoms: 30% throughput drop, 3-8 min\line
+            duration, ~2x/week. Provided interface stats and ping loss data.\line
+            ISP response: "We show clean signal on our end. Can you provide a packet capture?"\line
+\line
+2019-07-03  Sent ISP a 5-minute capture from the next drop window. 41KB, RFC-clean.\line
+            ISP response (07-05): "We see some retransmits on your end during the window.\line
+            Looks like your router is rate-limiting. Check your policy maps."\line
+\line
+2019-07-08  Reviewed policy maps on RT-SRF-01. No rate limiting configured. Sent ISP\line
+            sanitized config extract. ISP escalated to Tier 2.\line
+\line
+2019-07-10  ISP Tier 2 says they found a misconfigured shaper on their CPE that was being\line
+            applied intermittently during traffic bursts. Corrected on their end.\line
+\line
+2019-07-11  Monitoring since ISP fix. No drops observed in 72 hours.\line
+\line
+2019-07-14  Closing. Root cause: ISP-side traffic shaper misconfig.\line
+\line
+---\line
+\line
+ISP CONTACT\line
+NOC: 1-800-555-0199\line
+Tier 2 engineer: R. Menendez (rmenendez@isp-noc.example)\line
+Case reference: ISP-TKT-20190701-4482\line
+\line
+---\line
+\line
+LESSON LEARNED\line
+Always get ISP to look at their CPE config before assuming the problem is on our side.\line
+This one burned two weeks because their first-level response was to blame our gear.\line
+\line
+e.hargrove // TRACE // 2019-07-14\line
+}
