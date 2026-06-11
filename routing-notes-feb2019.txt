@@ -1,0 +1,66 @@
+ROUTING REVIEW NOTES - 2019-02-14
+Site: TRACE HQ / SRF
+Subject: Pre-emptive review after Jan OSPF incident - confirm stability
+e.hargrove
+
+---
+
+Following the NTP-related OSPF drops in January, I did a full review of the routing configuration
+on 02-14. No active issues but documenting what I found.
+
+OSPF AREA 0 - CURRENT STATE
+
+Area: 0 (backbone)
+Active routers: RT-SRF-01 (192.168.10.3), RT-SRF-02 (192.168.10.4)
+Adjacency: Full/DR - stable since NTP fix 2019-01-22
+Hello interval: 10s | Dead interval: 40s
+Authentication: MD5, key rotated 2019-01-22 after incident (standard post-incident procedure)
+
+Route table (RT-SRF-01, summarized):
+  O    192.168.10.0/24   [110/2]  via 192.168.10.4   (OSPF internal)
+  O    192.168.20.0/24   [110/2]  via 192.168.20.4   (OSPF internal)
+  O*E2 0.0.0.0/0         [110/1]  via 203.0.113.1    (default, via ISP)
+
+No unexpected routes. No external LSAs other than the default.
+
+---
+
+STATIC ROUTES (FW-SRF-01)
+
+192.168.10.0/24 → 192.168.10.2 (inbound from ISP segment, hairpin)
+192.168.30.0/24 → null0 (guest VLAN blackhole if routing breaks)
+
+These are fine. The guest blackhole has been there since 2017 - prevents guest traffic from
+leaking to staff network if VLAN config breaks on the WLC.
+
+---
+
+BGP (not in use at SRF)
+
+We don't run BGP. Single ISP, single uplink. If this changes (multi-homing discussion has come
+up twice in the last year), I'll revisit. For now, static default to ISP gateway is sufficient.
+
+---
+
+NOTES ON ROUTE REDISTRIBUTION
+
+The only redistribution happening is the OSPF → static default route. Nothing is being
+redistributed into OSPF from connected or static - all internal routes are OSPF native.
+There was a brief period in 2018 when a misconfigured redistribution was injecting connected
+routes and bloating the LSDB. That's been cleaned up. If the LSDB starts growing unexpectedly
+again, redistribution is the first thing to check.
+
+---
+
+ACTION ITEMS FROM THIS REVIEW
+
+[x] Confirmed OSPF adjacency stable post-NTP fix
+[x] Confirmed no unexpected routes in table
+[x] Rotated OSPF MD5 key post-incident (done 2019-01-22)
+[ ] Schedule semi-annual routing review for August 2019
+[ ] Consider documenting the guest blackhole route in the network diagram - it's not obvious
+    from looking at the config and someone will be confused by it eventually
+
+---
+
+e.hargrove // TRACE // 2019-02-14
