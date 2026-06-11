@@ -1,0 +1,69 @@
+SRF NETWORK HARDWARE INVENTORY
+Last updated: 2019-05-10
+e.hargrove // TRACE
+
+---
+
+LAYER 3 / ROUTING
+
+Device          Hostname        Mgmt IP          Serial              Location            Notes
+----------      -----------     ---------------  ------------------  ------------------  --------------------------------
+Router (pri)    RT-SRF-01       192.168.20.3     FTX1234A0B1         IDF-A / Rack 2      Uplink to WAN, OSPF area 0
+Router (sec)    RT-SRF-02       192.168.20.4     FTX1234A0B2         IDF-A / Rack 2      Backup uplink, cold standby
+Firewall        FW-SRF-01       192.168.20.2     JMX9988K22L         IDF-A / Rack 1      Perimeter, stateful inspection
+
+---
+
+LAYER 2 / SWITCHING
+
+Device          Hostname        Mgmt IP          MAC                 Location            Notes
+----------      -----------     ---------------  ------------------  ------------------  --------------------------------
+Core switch     SW-CORE-01      192.168.20.1     00:1A:2B:3C:4D:01   MDF / Rack 1        24-port SFP, VLANs 10/20/30/99
+Access sw A     SW-ACC-01       192.168.20.11    00:1A:2B:3C:4D:11   IDF-A / Rack 3      48-port copper, VLAN 10 access
+Access sw B     SW-ACC-02       192.168.20.12    00:1A:2B:3C:4D:12   IDF-B / Rack 1      48-port copper, VLAN 10 access
+Access sw C     SW-ACC-03       192.168.20.13    00:1A:2B:3C:4D:13   IDF-C / Rack 1      24-port copper, VLAN 10/30
+
+---
+
+WIRELESS
+
+Device          Hostname        Mgmt IP          MAC                 Location            Notes
+----------      -----------     ---------------  ------------------  ------------------  --------------------------------
+AP (main)       AP-SRF-01       192.168.10.51    00:AA:BB:CC:DD:01   Building A lobby    802.11ac, SSID: SRF-STAFF
+AP (conf)       AP-SRF-02       192.168.10.52    00:AA:BB:CC:DD:02   Conference room     802.11ac, hardware issue (see ISS-2019-028)
+WLC             WLC-SRF-01      192.168.20.30    00:AA:BB:CC:DD:30   MDF / Rack 1        Wireless LAN controller
+
+---
+
+SERVERS
+
+Device          Hostname        IP               MAC                 Location            Notes
+----------      -----------     ---------------  ------------------  ------------------  --------------------------------
+File server     SRV-SRF-01      192.168.10.20    00:50:56:AA:01:01   Server room         File shares, backups
+Auth server     SRV-SRF-02      192.168.10.21    00:50:56:AA:01:02   Server room         RADIUS, AD
+Monitoring      SRV-MON-01      192.168.10.25    00:50:56:AA:01:05   Server room         SNMP collector, syslog
+
+---
+
+WORKSTATIONS (selected)
+
+Device          Hostname        IP               MAC                 Location            Notes
+----------      -----------     ---------------  ------------------  ------------------  --------------------------------
+Workstation     WS-EH-01        192.168.10.10    00:50:56:BB:01:01   Office A-12         E. Hargrove primary
+Workstation     WS-GUEST-01     192.168.10.30    DHCP                Conference room     Guest VLAN 30
+Workstation     WS-GUEST-02     192.168.10.22    DHCP                Conference room     Guest VLAN 30 (see ISS-2019-025)
+
+---
+
+VLANS
+
+VLAN ID    Name            Subnet              Gateway             Notes
+--------   ----------      ----------------    ----------------    ---------------------------
+10         STAFF           192.168.10.0/24     192.168.10.1        Primary staff network
+20         MGMT            192.168.20.0/24     192.168.20.1        Management - isolated
+30         GUEST           192.168.30.0/24     192.168.30.1        Guest/conference, no LAN access
+99         NATIVE          (untagged)          --                  Trunk native VLAN
+
+---
+
+END OF INVENTORY
