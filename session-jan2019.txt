@@ -1,0 +1,50 @@
+SESSION NOTES - 2019-01-22
+Site: TRACE HQ / SRF
+Issue: Intermittent OSPF adjacency drops - RT-SRF-01 / RT-SRF-02
+Opened: 0840
+Closed: 1615
+
+---
+
+SYMPTOMS
+RT-SRF-01 (192.168.10.3) dropping adjacency with RT-SRF-02 (192.168.10.4) approx every 90-120 min.
+No pattern to time of day. First reported 2019-01-19 by facility staff (slow response to external queries).
+No alerts in SNMP. Dead interval not being hit per logs but adjacency still dropping.
+
+---
+
+STEPS TAKEN
+
+0840 - Pulled interface stats on both routers. No CRC errors, no input drops on GigE0/1.
+0915 - Confirmed hello/dead timers match on both sides (10/40). Not a config mismatch.
+0940 - Enabled debug ip ospf adj on RT-SRF-01. Watching.
+1005 - Adjacency drop #1 during session. Debug output shows "Dead timer expired" but hello interval
+       is 10s and we watched hellos going out every 10s on the wire. Timer shouldn't be expiring.
+1020 - Checked NTP sync on both routers. RT-SRF-02 is off by 4.3 seconds from stratum 2 source.
+       RT-SRF-01 synced correctly. Timer drift under load - the dead timer is calculated off the
+       local clock. When RT-SRF-02's clock drifts under CPU load, the perceived interval grows.
+1105 - Reconfigured NTP on RT-SRF-02. New stratum 2 source: 192.0.2.51 (upstream provider).
+       Confirmed sync within 0.2s.
+1200 - Watched through lunch. No drops.
+1415 - Still no drops. Running the capture anyway - routing-anomaly-jan2019.pcap - 28.8KB.
+       See file for full session traffic.
+1550 - No further drops through end of session.
+1615 - Closed. Root cause: NTP drift on RT-SRF-02 causing dead timer miscalculation under CPU load.
+
+---
+
+FIX
+Updated NTP config on RT-SRF-02. Added NTP authentication. Key is in vault under RT-SRF-02-NTP.
+Will monitor for recurrence. If it comes back, next step is to look at CPU load on RT-SRF-02
+during peak - may be a process hogging cycles during business hours.
+
+---
+
+FOLLOW-UP
+[ ] Monitor RT-SRF-02 CPU utilization for 2 weeks
+[ ] Verify NTP sync is holding at next maintenance window (2019-02-05)
+[ ] Ask vendor if NTP drift under load is a known issue on this platform
+
+---
+
+e.hargrove // TRACE
