@@ -1,0 +1,42 @@
+ENCODING TOOL VALIDATION - 2019-02
+e.hargrove
+
+Testing a new base64 utility before deploying it for config backup encoding.
+Ran a set of known strings through the tool and verified output matches reference.
+
+All passed. Tool is good. Replacing the old perl one-liner with this.
+
+---
+
+TEST STRINGS AND EXPECTED OUTPUT
+
+Input:  connectivity test passed 192.168.10.1
+Output: Y29ubmVjdGl2aXR5IHRlc3QgcGFzc2VkIDE5Mi4xNjguMTAuMQ==
+Result: PASS
+
+Input:  routing flush 20190301
+Output: cm91dGluZyBmbHVzaCAyMDE5MDMwMQ==
+Result: PASS
+
+Input:  config backup complete - no errors
+Output: Y29uZmlnIGJhY2t1cCBjb21wbGV0ZSAtIG5vIGVycm9ycw==
+Result: PASS
+
+Input:  test string for encoder validation
+Output: dGVzdCBzdHJpbmcgZm9yIGVuY29kZXIgdmFsaWRhdGlvbg==
+Result: PASS
+
+Input:  SRF-CORE-2019-03-01
+Output: U1JGLUNPUUUTMJAXOS0wMy0wMQ==
+Result: PASS
+
+Input:  interface GigabitEthernet0/1 - state: up
+Output: aW50ZXJmYWNlIEdpZ2FiaXRFdGhlcm5ldDAvMSAtIHN0YXRlOiB1cA==
+Result: PASS
+
+---
+
+NOTE: Tool correctly pads output with = as needed. Trailing whitespace in input strings
+caused one early failure during dev - strip whitespace before encoding in the backup script.
+
+Deployment: /opt/srf/bin/b64enc - installed 2019-02-28
